@@ -38,12 +38,12 @@ Edit `data/resorts.json` after reviewing the official sources. Set `status` to `
   "membershipSource": "https://www.indyskipass.com/official-resort-page",
   "coordinates": null,
   "coordinateSource": null,
-  "stats": { "summit": null, "vertical": null, "trails": null, "lifts": null, "acres": null },
+  "stats": { "summit": null, "vertical": null, "trails": null, "lifts": null, "acres": null, "skierVisits": null },
   "statSources": {}
 }
 ```
 
-This example is a schema guide, not a real resort. Regions are defined in `src/data.js`. Store summit elevation and vertical drop separately, in feet; area in acres; counts as integers. Missing statistics must be `null`, not zero. For each known statistic, add its official source URL under the same key in `statSources`. Coordinates are `[latitude, longitude]`, require a `coordinateSource`, and may be null; resorts without coordinates remain in the table. Never substitute a town center for an unverified resort position. Review what resort-reported area includes before comparing it.
+This example is a schema guide, not a real resort. Regions are defined in `src/data.js`. Store annual skier and snowboarder visits as a count of visits, with the reporting season or year in `skierVisitsPeriod` and a source in `statSources.skierVisits`. Do not include non-skiing visitors or substitute unique people. Store summit elevation and vertical drop separately, in feet; area in acres; counts as integers. Missing statistics must be `null`, not zero. For each known statistic, add its official source URL under the same key in `statSources`. Coordinates are `[latitude, longitude]`, require a `coordinateSource`, and may be null; resorts without coordinates remain in the table. Never substitute a town center for an unverified resort position. Review what resort-reported area includes before comparing it.
 
 `npm run validate:data` checks IDs, ranges, URL shapes, and required provenance fields. **It cannot verify the truth of a statistic, whether a URL is official for a resort, or directory completeness.** These need source review. Unknown values display blank and sort last in both directions. Minimum-vertical filtering excludes resorts with unknown vertical. Comparison selections persist across filtering so mountains in different regions can be compared.
 

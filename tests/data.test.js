@@ -32,3 +32,13 @@ test('data validation rejects unsourced statistics, duplicate IDs, and invalid c
   const invalid = structuredClone(fixture); invalid.resorts[0].coordinates = [100, 0];
   assert.throws(() => validateDataset(invalid), /coordinates/);
 });
+test('annual skier visits require a source and reporting period and sort with blanks last', () => {
+  const data = structuredClone(fixture);
+  data.resorts[0].stats.skierVisits = 120000;
+  assert.throws(() => validateDataset(data), /period/);
+  data.resorts[0].skierVisitsPeriod = '2025–26';
+  assert.throws(() => validateDataset(data), /unsourced skierVisits/);
+  data.resorts[0].statSources.skierVisits = 'https://example.com/report';
+  validateDataset(data);
+  for (const direction of ['asc', 'desc']) assert.equal(sortResorts(data.resorts, 'skierVisits', direction)[0].id, 'alpha');
+});

@@ -6,6 +6,7 @@ export const metrics = {
   trails: { label: 'Trails', unit: '', factor: 1 },
   lifts: { label: 'Lifts', unit: '', factor: 1 },
   acres: { label: 'Skiable area', unit: 'ac', metricUnit: 'ha', factor: 0.40468564224 },
+  skierVisits: { label: 'Annual skier & snowboarder visits', unit: '', factor: 1 },
 };
 export function formatMetric(value, key, units = 'imperial') {
   if (value == null) return '';
@@ -44,10 +45,11 @@ export function validateDataset(data) {
     if (!r.stats || !r.statSources) fail(`Missing stats: ${r.id}`);
     if (r.trailMap != null && !url(r.trailMap)) fail(`Invalid trail map URL: ${r.id}`);
     if (r.coordinates != null && (!Array.isArray(r.coordinates) || r.coordinates.length !== 2 || !r.coordinates.every(Number.isFinite) || Math.abs(r.coordinates[0]) > 90 || Math.abs(r.coordinates[1]) > 180 || !url(r.coordinateSource))) fail(`Invalid or unsourced coordinates: ${r.id}`);
+    if (r.stats.skierVisits != null && (!r.skierVisitsPeriod || typeof r.skierVisitsPeriod !== 'string')) fail(`Missing skier visits period: ${r.id}`);
     for (const key of Object.keys(metrics)) {
       const value = r.stats[key];
       if (value != null && (!Number.isFinite(value) || value < 0 || !url(r.statSources[key]))) fail(`Invalid or unsourced ${key}: ${r.id}`);
-      if (['lifts', 'trails'].includes(key) && value != null && !Number.isInteger(value)) fail(`Non-integer count: ${r.id}`);
+      if (['lifts', 'trails', 'skierVisits'].includes(key) && value != null && !Number.isInteger(value)) fail(`Non-integer count: ${r.id}`);
     }
   }
   return data;
