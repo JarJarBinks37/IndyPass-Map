@@ -3,6 +3,7 @@ import { feature } from 'topojson-client';
 import world from 'world-atlas/countries-110m.json';
 import 'leaflet/dist/leaflet.css';
 import './style.css';
+import { setupSettings } from './settings.js';
 import dataset from '../data/resorts.json';
 import { regions, metrics, filterResorts, sortResorts, formatMetric, validateDataset, rankColors, currentSeasonStatus } from './data.js';
 
@@ -38,7 +39,7 @@ function showDetail(id) {
   const panel = document.querySelector('#detail');
   panel.hidden = !r;
   if (!r) return;
-  panel.innerHTML = `<button id="close-detail" class="close" aria-label="Close resort details">×</button><p class="eyebrow">${escape(r.region)}${r.categories?.length ? ` · ${escape(r.categories.join(' / '))}` : ''}</p><h2>${escape(r.name)}</h2><p>Season: ${escape(currentSeasonStatus(r))}</p><p>${escape([r.location, r.country].filter(Boolean).join(' · '))}</p><dl>${Object.entries(metrics).map(([key, m]) => `<div><dt>${m.label}</dt><dd>${escape(formatMetric(r.stats[key], key, state.units))}${key === 'skierVisits' && r.stats[key] != null ? ` <small>(${escape(r.skierVisitsPeriod)})</small>` : ''}${r.stats[key] != null ? ` <a class="source" href="${escape(r.statSources[key])}" target="_blank" rel="noopener noreferrer" aria-label="Source for ${m.label}">↗</a>` : ''}</dd></div>`).join('')}</dl>${compareButton(r)}${r.trailMap ? `<a class="visit" href="${escape(r.trailMap)}" target="_blank" rel="noopener noreferrer">View resort trail map ↗</a>` : ''}<p class="source-links">Summit photo not available.</p>${r.website ? `<a class="visit" href="${escape(r.website)}" target="_blank" rel="noopener noreferrer">Official resort website ↗</a>` : ''}<p class="source-links"><a href="${escape(r.membershipSource)}" target="_blank" rel="noopener noreferrer">Pass membership source ↗</a>${r.coordinates ? ` · <a href="${escape(r.coordinateSource)}" target="_blank" rel="noopener noreferrer">Location source ↗</a>` : ''}</p>`;
+  panel.innerHTML = `<button id="close-detail" class="close" aria-label="Close resort details">×</button><p class="eyebrow">${escape(r.region)}${r.categories?.length ? ` · ${escape(r.categories.join(' / '))}` : ''}</p><h2>${escape(r.name)}</h2><p>Season: ${escape(currentSeasonStatus(r))}</p><p>${escape([r.location, r.country].filter(Boolean).join(' · '))}</p><dl>${Object.entries(metrics).map(([key, m]) => `<div><dt>${m.label}</dt><dd>${escape(formatMetric(r.stats[key], key, state.units))}${key === 'skierVisits' && r.stats[key] != null ? ` <small>(${escape(r.skierVisitsPeriod)})</small>` : ''}${r.personalStats?.[key] ? ' <small>(personal edit)</small>' : r.stats[key] != null && r.statSources[key] ? ` <a class="source" href="${escape(r.statSources[key])}" target="_blank" rel="noopener noreferrer" aria-label="Source for ${m.label}">↗</a>` : ''}</dd></div>`).join('')}</dl>${compareButton(r)}${r.trailMap ? `<a class="visit" href="${escape(r.trailMap)}" target="_blank" rel="noopener noreferrer">View resort trail map ↗</a>` : ''}<p class="source-links">Summit photo not available.</p>${r.website ? `<a class="visit" href="${escape(r.website)}" target="_blank" rel="noopener noreferrer">Official resort website ↗</a>` : ''}<p class="source-links"><a href="${escape(r.membershipSource)}" target="_blank" rel="noopener noreferrer">Pass membership source ↗</a>${r.coordinates ? ` · <a href="${escape(r.coordinateSource)}" target="_blank" rel="noopener noreferrer">Location source ↗</a>` : ''}</p>`;
   document.querySelector('#close-detail').onclick = () => showDetail(null);
 }
 function renderComparison() {
@@ -98,4 +99,5 @@ document.addEventListener('click', e => {
     render();
   }
 });
+setupSettings(dataset, render);
 render();
