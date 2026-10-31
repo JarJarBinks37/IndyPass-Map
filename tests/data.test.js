@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { filterResorts, sortResorts, formatMetric, validateDataset } from '../src/data.js';
+import { filterResorts, sortResorts, formatMetric, validateDataset, rankColors } from '../src/data.js';
 import { fixture } from './fixture.js';
 test('shared filters combine search, region, and minimum vertical', () => {
   assert.deepEqual(filterResorts(fixture.resorts, { search: 'vermont', region: 'Northeast U.S.', minimumVertical: 1500 }).map(r => r.id), ['alpha']);
@@ -41,4 +41,19 @@ test('annual skier visits require a source and reporting period and sort with bl
   data.resorts[0].statSources.skierVisits = 'https://example.com/report';
   validateDataset(data);
   for (const direction of ['asc', 'desc']) assert.equal(sortResorts(data.resorts, 'skierVisits', direction)[0].id, 'alpha');
+});
+
+test('rank colors distinguish low, high, tied, and missing values', () => {
+  const resorts = [
+    { id: 'low', stats: { vertical: 500 } },
+    { id: 'high', stats: { vertical: 2000 } },
+    { id: 'tie', stats: { vertical: 2000 } },
+    { id: 'missing', stats: { vertical: null } },
+  ];
+  const colors = rankColors(resorts, 'vertical');
+  assert.equal(colors.get('low'), '#60b8f2');
+  assert.equal(colors.get('high'), '#fa615b');
+  assert.equal(colors.get('tie'), colors.get('high'));
+  assert.equal(colors.get('missing'), '#a0a9b1');
+  assert.equal(rankColors([resorts[0]], 'vertical').get('low'), '#dbe46b');
 });

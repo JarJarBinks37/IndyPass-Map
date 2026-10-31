@@ -2,3 +2,5 @@
 
 /* Imagery is intentionally subdued so markers stand out against snow and terrain. */
 #map{background:#172e38}.satellite-tiles{filter:brightness(.68) saturate(.7) contrast(1.12)}
+
+.map-heat{position:absolute;z-index:500;right:16px;top:16px;background:#142731ed;color:#e5eff0;border:1px solid #60747a;border-radius:6px;padding:12px 14px;box-shadow:0 4px 18px #0004;font-size:10px}.map-heat label{display:block;font-size:9px;letter-spacing:1.3px;font-weight:bold;color:#bdd0cf;margin-bottom:6px}.map-heat select{width:215px;background:#263d46;border:1px solid #5d7279;color:#fff;padding:8px}.heat-legend{display:flex;align-items:center;gap:8px;margin-top:10px}.heat-legend i{height:6px;flex:1;background:linear-gradient(90deg,#60b8f2,#6bd9c3,#dbe46b,#f3a846,#fa615b);border-radius:4px}.heat-missing{margin-top:8px;color:#bdcacc}.heat-missing b{display:inline-block;width:7px;height:7px;border-radius:50%;background:#a0a9b1;margin-right:4px}@media(max-width:600px){.map-heat{top:12px;right:10px;padding:9px}.map-heat select{width:175px;font-size:11px}.map-label{display:none}#detail{z-index:600}}
