@@ -1,4 +1,5 @@
 export const regions = ['All regions', 'Northeast U.S.', 'Midwest U.S.', 'West', 'Canada', 'Europe', 'Japan', 'Other'];
+const states = Object.fromEntries(Object.entries({ AL:'Alabama', AK:'Alaska', AZ:'Arizona', AR:'Arkansas', CA:'California', CO:'Colorado', CT:'Connecticut', DE:'Delaware', FL:'Florida', GA:'Georgia', HI:'Hawaii', ID:'Idaho', IL:'Illinois', IN:'Indiana', IA:'Iowa', KS:'Kansas', KY:'Kentucky', LA:'Louisiana', ME:'Maine', MD:'Maryland', MA:'Massachusetts', MI:'Michigan', MN:'Minnesota', MS:'Mississippi', MO:'Missouri', MT:'Montana', NE:'Nebraska', NV:'Nevada', NH:'New Hampshire', NJ:'New Jersey', NM:'New Mexico', NY:'New York', NC:'North Carolina', ND:'North Dakota', OH:'Ohio', OK:'Oklahoma', OR:'Oregon', PA:'Pennsylvania', RI:'Rhode Island', SC:'South Carolina', SD:'South Dakota', TN:'Tennessee', TX:'Texas', UT:'Utah', VT:'Vermont', VA:'Virginia', WA:'Washington', WV:'West Virginia', WI:'Wisconsin', WY:'Wyoming' }).map(([code, name]) => [name.toLowerCase(), code.toLowerCase()]));
 export const metrics = {
   summit: { label: 'Summit elevation', unit: 'ft', metricUnit: 'm', factor: 0.3048 },
   vertical: { label: 'Vertical drop', unit: 'ft', metricUnit: 'm', factor: 0.3048 },
@@ -14,7 +15,7 @@ export function formatMetric(value, key, units = 'imperial') {
 export function filterResorts(resorts, { search = '', region = 'All regions', minimumVertical = 0 } = {}) {
   const query = search.trim().toLocaleLowerCase();
   return resorts.filter(r => (region === 'All regions' || r.region === region)
-    && `${r.name} ${r.country} ${r.location}`.toLocaleLowerCase().includes(query)
+    && (`${r.name} ${r.country} ${r.location}`.toLocaleLowerCase().includes(query) || (r.country === 'United States' && states[query] && new RegExp(`\\b${states[query]}\\b`, 'i').test(r.location)))
     && (!minimumVertical || (r.stats.vertical != null && r.stats.vertical >= minimumVertical)));
 }
 export function sortResorts(resorts, key = 'name', direction = 'asc') {
@@ -41,6 +42,7 @@ export function validateDataset(data) {
     if (!r.name || typeof r.location !== 'string' || typeof r.country !== 'string' || !regions.slice(1).includes(r.region)) fail(`Invalid location: ${r.id}`);
     if ((r.website && !/^https?:\/\//.test(r.website)) || !url(r.membershipSource) || !/(^|\.)indyskipass\.com$/.test(new URL(r.membershipSource).hostname)) fail(`Missing official membership source or website: ${r.id}`);
     if (!r.stats || !r.statSources) fail(`Missing stats: ${r.id}`);
+    if (r.trailMap != null && !url(r.trailMap)) fail(`Invalid trail map URL: ${r.id}`);
     if (r.coordinates != null && (!Array.isArray(r.coordinates) || r.coordinates.length !== 2 || !r.coordinates.every(Number.isFinite) || Math.abs(r.coordinates[0]) > 90 || Math.abs(r.coordinates[1]) > 180 || !url(r.coordinateSource))) fail(`Invalid or unsourced coordinates: ${r.id}`);
     for (const key of Object.keys(metrics)) {
       const value = r.stats[key];

@@ -5,6 +5,9 @@ import { fixture } from './fixture.js';
 test('shared filters combine search, region, and minimum vertical', () => {
   assert.deepEqual(filterResorts(fixture.resorts, { search: 'vermont', region: 'Northeast U.S.', minimumVertical: 1500 }).map(r => r.id), ['alpha']);
   assert.equal(filterResorts(fixture.resorts, { region: 'Japan', minimumVertical: 1 }).length, 0);
+  const washington = { ...fixture.resorts[0], location: 'Chewelah, WA, USA' };
+  assert.equal(filterResorts([washington], { search: 'Washington' }).length, 1);
+  assert.equal(filterResorts([{ ...washington, country: 'Canada' }], { search: 'Washington' }).length, 0);
 });
 test('every statistic sorts both directions, missing values always last', () => {
   for (const key of ['summit', 'vertical', 'trails', 'lifts', 'acres']) for (const direction of ['asc', 'desc']) {

@@ -1,6 +1,6 @@
 # Independent Lines
 
-A desktop-first Indy Pass resort explorer with a locally bundled world map, shared search and geographic/vertical filters, sortable statistics, resort source links, metric/imperial units, and comparison of up to four resorts. Works on smaller screens too. No API key or backend required.
+A desktop-first Indy Pass resort explorer with satellite imagery and a bundled fallback map, shared search and geographic/vertical filters, sortable statistics, resort source links, metric/imperial units, and comparison of up to four resorts. Works on smaller screens too. No API key or backend required.
 
 ## Run
 
@@ -47,4 +47,4 @@ This example is a schema guide, not a real resort. Regions are defined in `src/d
 
 `npm run validate:data` checks IDs, ranges, URL shapes, and required provenance fields. **It cannot verify the truth of a statistic, whether a URL is official for a resort, or directory completeness.** These need source review. Unknown values display blank and sort last in both directions. Minimum-vertical filtering excludes resorts with unknown vertical. Comparison selections persist across filtering so mountains in different regions can be compared.
 
-The Natural Earth basemap is bundled through `world-atlas`; no external tile requests or geocoding services are used. Leaflet provides map interaction. This is an independent project, not affiliated with Indy Pass.
+The map requests Esri World Imagery tiles, which may not show winter conditions, and falls back to bundled Natural Earth geography if imagery cannot load. Resort detail pages link to official Indy Pass trail maps where available; some links lead to a resort page rather than a printable file. Verified summit photos and ski-trail geometry are not included. Leaflet provides map interaction. This is an independent project, not affiliated with Indy Pass.
