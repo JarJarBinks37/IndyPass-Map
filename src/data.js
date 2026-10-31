@@ -36,14 +36,14 @@ export function sortResorts(resorts, key = 'name', direction = 'asc') {
   });
 }
 // Rank the visible resorts by distinct values; equal values always share a color.
-export function rankColors(resorts, key, direction = 'high') {
+export function rankColors(resorts, key) {
   const palette = ['#60b8f2', '#6bd9c3', '#dbe46b', '#f3a846', '#fa615b'];
   const values = [...new Set(resorts.map(r => r.stats[key]).filter(v => v != null))].sort((a, b) => a - b);
   return new Map(resorts.map(r => {
     const value = r.stats[key];
     if (value == null) return [r.id, '#a0a9b1'];
     const index = values.length === 1 ? 2 : Math.round(values.indexOf(value) * 4 / (values.length - 1));
-    return [r.id, palette[direction === 'low' ? 4 - index : index]];
+    return [r.id, palette[index]];
   }));
 }
 export function validateDataset(data) {
