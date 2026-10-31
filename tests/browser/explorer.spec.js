@@ -20,6 +20,13 @@ test('fixture: search, sort, map details, shared filters, units, and comparison'
   await page.route('**/data/resorts.json*', route => route.fulfill({ contentType: 'application/javascript', body: `export default ${JSON.stringify(fixture)};` }));
   await page.goto('/');
   await expect(page.locator('#result-count')).toContainText('3 resorts');
+  await expect(page.locator('#heat-category')).toHaveValue('skierVisits');
+  await expect(page.locator('.pass-info')).toContainText('2026–27');
+  await page.locator('#season-status').selectOption('open');
+  await expect(page.locator('#result-count')).toContainText('0 resorts');
+  await page.locator('#season-status').selectOption('unknown');
+  await expect(page.locator('#result-count')).toContainText('3 resorts');
+  await page.locator('#season-status').selectOption('all');
   await expect(page.locator('path.leaflet-interactive')).toHaveCount(2);
   await expect(page.locator('.leaflet-fallback-pane')).toHaveCSS('z-index', '150');
   await page.locator('#heat-category').selectOption('summit');
@@ -31,6 +38,9 @@ test('fixture: search, sort, map details, shared filters, units, and comparison'
   await page.locator('#heat-category').selectOption('vertical');
   await expect(page.locator('#heat-status')).toContainText('2 of 3 resorts have data');
   await expect(page.locator('path.leaflet-interactive').first()).toHaveAttribute('fill', '#fa615b');
+  await page.locator('#heat-direction').selectOption('low');
+  await expect(page.locator('path.leaflet-interactive').first()).toHaveAttribute('fill', '#60b8f2');
+  await page.locator('#heat-direction').selectOption('high');
   await expect(page.locator('path.leaflet-interactive').last()).toHaveAttribute('fill', '#a0a9b1');
   await page.locator('path.leaflet-interactive').first().click();
   await expect(page.locator('#detail')).toContainText('Test Alpine');

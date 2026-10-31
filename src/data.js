@@ -13,9 +13,15 @@ export function formatMetric(value, key, units = 'imperial') {
   const metric = metrics[key];
   return `${Math.round(value * (units === 'metric' ? metric.factor : 1)).toLocaleString('en-US')}${metric.unit ? ` ${units === 'metric' ? metric.metricUnit : metric.unit}` : ''}`;
 }
-export function filterResorts(resorts, { search = '', region = 'All regions', minimumVertical = 0 } = {}) {
+export function currentSeasonStatus(resort, now = Date.now()) {
+  const observation = resort.seasonStatus;
+  if (!observation || !['open', 'closed'].includes(observation.status) || !observation.source || !Number.isFinite(Date.parse(observation.observedAt)) || !Number.isFinite(Date.parse(observation.validUntil)) || Date.parse(observation.observedAt) > now || Date.parse(observation.validUntil) <= now) return 'unknown';
+  return observation.status;
+}
+export function filterResorts(resorts, { search = '', region = 'All regions', minimumVertical = 0, seasonStatus = 'all' } = {}) {
   const query = search.trim().toLocaleLowerCase();
-  return resorts.filter(r => (region === 'All regions' || r.region === region)
+  return resorts.filter(r => (seasonStatus === 'all' || currentSeasonStatus(r) === seasonStatus)
+    && (region === 'All regions' || r.region === region)
     && (`${r.name} ${r.country} ${r.location}`.toLocaleLowerCase().includes(query) || (r.country === 'United States' && states[query] && new RegExp(`\\b${states[query]}\\b`, 'i').test(r.location)))
     && (!minimumVertical || (r.stats.vertical != null && r.stats.vertical >= minimumVertical)));
 }
@@ -30,14 +36,14 @@ export function sortResorts(resorts, key = 'name', direction = 'asc') {
   });
 }
 // Rank the visible resorts by distinct values; equal values always share a color.
-export function rankColors(resorts, key) {
+export function rankColors(resorts, key, direction = 'high') {
   const palette = ['#60b8f2', '#6bd9c3', '#dbe46b', '#f3a846', '#fa615b'];
   const values = [...new Set(resorts.map(r => r.stats[key]).filter(v => v != null))].sort((a, b) => a - b);
   return new Map(resorts.map(r => {
     const value = r.stats[key];
     if (value == null) return [r.id, '#a0a9b1'];
     const index = values.length === 1 ? 2 : Math.round(values.indexOf(value) * 4 / (values.length - 1));
-    return [r.id, palette[index]];
+    return [r.id, palette[direction === 'low' ? 4 - index : index]];
   }));
 }
 export function validateDataset(data) {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { filterResorts, sortResorts, formatMetric, validateDataset, rankColors } from '../src/data.js';
+import { filterResorts, sortResorts, formatMetric, validateDataset, rankColors, currentSeasonStatus } from '../src/data.js';
 import { fixture } from './fixture.js';
 test('shared filters combine search, region, and minimum vertical', () => {
   assert.deepEqual(filterResorts(fixture.resorts, { search: 'vermont', region: 'Northeast U.S.', minimumVertical: 1500 }).map(r => r.id), ['alpha']);
@@ -56,4 +56,11 @@ test('rank colors distinguish low, high, tied, and missing values', () => {
   assert.equal(colors.get('tie'), colors.get('high'));
   assert.equal(colors.get('missing'), '#a0a9b1');
   assert.equal(rankColors([resorts[0]], 'vertical').get('low'), '#dbe46b');
+});
+
+test('season status expires and is not inferred from hemisphere', () => {
+  const resort = { seasonStatus: { status: 'open', observedAt: '2026-07-01T00:00:00Z', validUntil: '2026-07-02T00:00:00Z', source: 'https://example.com' } };
+  assert.equal(currentSeasonStatus(resort, Date.parse('2026-07-01T12:00:00Z')), 'open');
+  assert.equal(currentSeasonStatus(resort, Date.parse('2026-07-03T00:00:00Z')), 'unknown');
+  assert.equal(currentSeasonStatus({ country: 'Chile' }), 'unknown');
 });
