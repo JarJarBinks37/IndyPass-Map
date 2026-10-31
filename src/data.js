@@ -6,7 +6,7 @@ export const metrics = {
   trails: { label: 'Trails', unit: '', factor: 1 },
   lifts: { label: 'Lifts', unit: '', factor: 1 },
   acres: { label: 'Skiable area', unit: 'ac', metricUnit: 'ha', factor: 0.40468564224 },
-  skierVisits: { label: 'Annual skier & snowboarder visits', unit: '', factor: 1 },
+  skierVisits: { label: 'Annual Visits', unit: '', factor: 1 },
 };
 export function formatMetric(value, key, units = 'imperial') {
   if (value == null) return '';

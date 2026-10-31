@@ -24,7 +24,12 @@ test('fixture: search, sort, map details, shared filters, units, and comparison'
   await expect(page.locator('.leaflet-fallback-pane')).toHaveCSS('z-index', '150');
   await page.locator('#heat-category').selectOption('summit');
   await expect(page.locator('path.leaflet-interactive').first()).toHaveAttribute('fill', '#dbe46b');
+  await page.locator('#heat-category').selectOption('skierVisits');
+  await expect(page.locator('#heat-status')).toHaveText('No annual visits data for these resorts');
+  await expect(page.locator('.heat-legend')).toBeHidden();
+  await expect(page.locator('path.leaflet-interactive').first()).toHaveAttribute('fill', '#a0a9b1');
   await page.locator('#heat-category').selectOption('vertical');
+  await expect(page.locator('#heat-status')).toContainText('2 of 3 resorts have data');
   await expect(page.locator('path.leaflet-interactive').first()).toHaveAttribute('fill', '#fa615b');
   await expect(page.locator('path.leaflet-interactive').last()).toHaveAttribute('fill', '#a0a9b1');
   await page.locator('path.leaflet-interactive').first().click();
