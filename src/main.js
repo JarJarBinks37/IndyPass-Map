@@ -1,5 +1,7 @@
 import L from 'leaflet';
 import { feature } from 'topojson-client';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import admin1Boundaries from '../data/admin1-boundaries.json';
 import world from 'world-atlas/countries-110m.json';
 import 'leaflet/dist/leaflet.css';
 import './style.css';
@@ -29,6 +31,21 @@ map.createPane('fallback');
 map.getPane('fallback').style.zIndex = 150;
 L.geoJSON(feature(world, world.objects.countries), { pane: 'fallback', interactive: false, style: { color: '#465a61', weight: 0.7, fillColor: '#293e45', fillOpacity: 1 } }).addTo(map);
 const imagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Imagery © Esri and its contributors', className: 'satellite-tiles' }).addTo(map);
+// Country membership uses the full resort directory, independent of active filters.
+const countries = feature(world, world.objects.countries);
+const countryAliases = { 'United States': 'United States of America', Scotland: 'United Kingdom' };
+const resortCountries = new Set(dataset.resorts.map(r => countryAliases[r.country] || r.country).filter(Boolean));
+for (const resort of dataset.resorts.filter(r => !r.country && r.coordinates)) {
+  const point = { type: 'Point', coordinates: [resort.coordinates[1], resort.coordinates[0]] };
+  const match = countries.features.find(country => booleanPointInPolygon(point, country));
+  if (match) resortCountries.add(match.properties.name);
+}
+map.createPane('boundaries');
+map.getPane('boundaries').style.zIndex = 350;
+map.getPane('boundaries').style.pointerEvents = 'none';
+L.geoJSON(countries, { pane: 'boundaries', interactive: false, style: country => ({ color: '#ffffff', opacity: 0.78, weight: 1.6, fillColor: '#061016', fillOpacity: resortCountries.has(country.properties.name) ? 0 : 0.27 }) }).addTo(map);
+L.geoJSON(admin1Boundaries, { pane: 'boundaries', interactive: false, style: { color: '#ffffff', opacity: 0.7, weight: 0.65, fill: false } }).addTo(map);
+map.attributionControl.addAttribution('Boundaries: Natural Earth');
 const markers = L.layerGroup().addTo(map);
 const bounds = { 'All regions': [[15, -145], [65, 145]], 'Northeast U.S.': [[36, -83], [48, -65]], 'Midwest U.S.': [[36, -103], [50, -80]], West: [[29, -130], [51, -102]], Canada: [[43, -140], [65, -52]], Europe: [[36, -12], [70, 36]], Japan: [[30, 128], [46, 146]], Other: [[-55, -170], [70, 170]] };
 function visible() { return sortResorts(filterResorts(dataset.resorts, state), state.sort, state.direction); }
