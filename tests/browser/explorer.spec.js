@@ -3,12 +3,12 @@ import { fixture } from '../fixture.js';
 test('production shows honest data status and working map and table controls', async ({ page }) => {
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Your next mountain starts here' })).toBeVisible();
-  await expect(page.locator('.leaflet-interactive')).toHaveCount(0);
+  await expect(page.locator('#result-count')).toContainText('288 resorts');
+  await expect(page.locator('.leaflet-interactive')).toHaveCount(288);
   await page.getByRole('button', { name: 'Japan', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Japan', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: '☷ Table' }).click();
-  await expect(page.getByRole('heading', { name: 'Awaiting the verified resort list' })).toBeVisible();
+  await expect(page.locator('#table-view tbody tr')).not.toHaveCount(0);
   await page.getByRole('button', { name: 'Summit elevation' }).click();
   await expect(page.locator('th[aria-sort="ascending"]')).toContainText('Summit elevation');
   await page.screenshot({ path: 'test-results/table.png', fullPage: true });

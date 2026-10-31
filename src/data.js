@@ -38,8 +38,8 @@ export function validateDataset(data) {
   for (const r of data.resorts) {
     if (!r.id || ids.has(r.id)) fail('Missing or duplicate resort ID');
     ids.add(r.id);
-    if (![r.name, r.country, r.location].every(v => typeof v === 'string' && v.trim()) || !regions.slice(1).includes(r.region)) fail(`Invalid location: ${r.id}`);
-    if (!url(r.website) || !url(r.membershipSource) || !/(^|\.)indyskipass\.com$/.test(new URL(r.membershipSource).hostname)) fail(`Missing official membership source or website: ${r.id}`);
+    if (!r.name || typeof r.location !== 'string' || typeof r.country !== 'string' || !regions.slice(1).includes(r.region)) fail(`Invalid location: ${r.id}`);
+    if ((r.website && !/^https?:\/\//.test(r.website)) || !url(r.membershipSource) || !/(^|\.)indyskipass\.com$/.test(new URL(r.membershipSource).hostname)) fail(`Missing official membership source or website: ${r.id}`);
     if (!r.stats || !r.statSources) fail(`Missing stats: ${r.id}`);
     if (r.coordinates != null && (!Array.isArray(r.coordinates) || r.coordinates.length !== 2 || !r.coordinates.every(Number.isFinite) || Math.abs(r.coordinates[0]) > 90 || Math.abs(r.coordinates[1]) > 180 || !url(r.coordinateSource))) fail(`Invalid or unsourced coordinates: ${r.id}`);
     for (const key of Object.keys(metrics)) {

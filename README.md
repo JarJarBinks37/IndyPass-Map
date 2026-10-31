@@ -19,11 +19,9 @@ npm run preview
 
 `npm run test:browser` runs the Chromium interaction tests. The configuration uses `/usr/bin/chromium` supplied in this cloud environment; adjust `executablePath` for another machine. Browser tests intercept the data module with synthetic fixtures; these are never shipped as resort data.
 
-## Data status — incomplete
+## Data status
 
-**The production dataset is empty. This version does not yet contain the current official resort list.** The environment blocked access to the official Indy Pass website during development. No membership, coordinates, or statistics have been guessed or copied from memory. The app displays this limitation explicitly.
-
-Enable `indyskipass.com` and `www.indyskipass.com` in the environment network settings, then verify the current season's full directory at https://www.indyskipass.com/our-resorts. Resort websites may require additional domain permissions. Membership changes seasonally; don't label the dataset complete until all directory entries have been reconciled. Distinguish alpine, cross-country, and other partner categories when checking what the official list includes.
+The dataset contains 288 entries from the official Indy Pass directory, accessed October 31, 2026, including Alpine, cross-country, Cat & Heli and Learn to Turn partners. Official directory cards provide coordinates and some statistics; resort detail pages supply further figures and links. Membership and figures may change; the site does not state a season in the extracted directory, so the snapshot is marked partial. Missing fields are blank. Geographic groups are assigned from the listed locations and some incomplete addresses remain in Other. Check source links before relying on figures.
 
 ## Populate verified data
 
